@@ -1,0 +1,199 @@
+---
+title: "Top songs in cosmetics-related TikToks Summer 2022"
+format:
+  html:
+    css: styles.css
+execute:
+  echo: false
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup}
+if (!"pacman" %in% installed.packages()[, "Package"]) {
+  install.packages("pacman")
+}
+
+pacman::p_load(
+  reactable,
+  reactablefmtr,
+  dplyr,
+  stringr,
+  sparkline,
+  scales
+)
+```
+
+```{r data-import}
+songs_import <- readRDS(file = "songs.rds") %>% 
+  as_tibble()
+
+# Find images for top 20 songs + default image
+image_files <- paste0(
+  "images/", 
+  list.files(path = "images/", pattern = "*.jpeg")
+)
+```
+
+```{r data-formatting}
+songs <- songs_import %>% 
+  select(music_id, artist, song_title, play_url, n_tiktoks, weekly_tiktoks) %>% 
+  mutate(
+    image_path = c(image_files[1:20], rep(image_files[21], n() - 20)),
+    song_link = paste0(
+      "https://www.tiktok.com/music/",
+      str_replace_all(str_to_lower(artist), " ", "-"),
+      "-",
+      music_id
+    )
+  ) %>%
+  mutate(
+    # Display image on the left, artist on top of song title
+    stack = paste0(
+      "<div style=\"display: inline-block; vertical-align: top;\">",
+      "<a href=\"", 
+      song_link, 
+      "\" ",
+      "target=\"_blank\" ", 
+      "rel=\"noreferrer noopener\" ", 
+      ">",
+      "<img src=\"",
+      image_path,
+      "\" style=\"height: auto; width: auto; max-width: 100px; max-height: 100px; \"></img></a>",
+      "</div>",
+      "<div style=\"margin-left: 10px; display: inline-block; line-break: auto; width: 190px\"><b>",
+      artist,
+      "</b><br><a href=\"",
+      song_link, 
+      "\" ",
+      "target=\"_blank\" ", 
+      "rel=\"noreferrer noopener\" ", 
+      ">",
+      song_title,
+      "</a></div>"
+    ),
+    .before = 1
+  ) %>% 
+  mutate(rank = rank(-n_tiktoks, ties.method = "min")) %>% 
+  select(rank, stack, play_url, n_tiktoks, weekly_tiktoks)
+```
+
+```{r reactable-theme}
+theme <- reactableTheme(
+  style = list(
+    fontFamily = "Roboto, Arial, sans-serif"
+  )
+)
+```
+
+```{r table}
+audio_player <- function(src) {
+  id <- paste0("player_", src)
+  # Control audio with a play and a pause button
+  # Pressing play hides play button and shows pause, and the other way around
+  str_interp('<audio id="${id}" src="${src}"></audio>
+  <div>
+    <button class="music-controls play-button" id="${id}_play" onclick="
+      document.getElementById(\'${id}\').play();
+      document.getElementById(\'${id}_play\').style.display=\'none\';
+      document.getElementById(\'${id}_pause\').style.display=\'block\';
+    ">Play</button>
+    <button class="music-controls pause-button" id="${id}_pause" style="display:none;" onclick="
+      document.getElementById(\'${id}\').pause();
+      document.getElementById(\'${id}_pause\').style.display=\'none\';
+      document.getElementById(\'${id}_play\').style.display=\'block\';
+    ">Pause</button>
+  </div>')
+}
+
+reactable(
+  data = songs,
+  theme = theme,
+  highlight = TRUE,
+  defaultSorted = "n_tiktoks",
+  defaultSortOrder = "desc",
+  columns = list(
+    rank = colDef(
+      name = "",
+      maxWidth = 50
+    ),
+    stack = colDef(
+      name = 'Artist<p style="font-weight: normal; color: #fa446b">Song</p>',
+      html = TRUE,
+      minWidth = 275
+    ),
+    play_url = colDef(
+      name = "Listen",
+      cell = audio_player,
+      style = "align-items: center;",
+      html = TRUE,
+      maxWidth = 250,
+      sortable = FALSE
+    ),
+    n_tiktoks = colDef(
+      name = "Uses",
+      cell = icon_sets(
+        data = songs,
+        icons = c("tiktok"),
+        colors = "black",
+        number_fmt = label_number(big.mark = ",")
+      ),
+      style = "align-items: center;"
+    ),
+    weekly_tiktoks = colDef(
+      name = "Weekly Uses",
+      sortable = FALSE,
+      cell = function(value) {
+        sparkline(
+          value, 
+          type = "bar", 
+          chartRangeMin = 0,
+          barColor = "#fa446b",
+          chartRangeMax = max(value),
+          barSpacing = 5,
+          height = "100%"
+        )
+      },
+      style = "align-items: center;",
+      align = "center"
+    )
+  )
+) %>% 
+  add_source(source = paste0(
+    "Data: cosmention.com, datapoints cover the time from ",
+    format(as.Date("2022-06-01"), "%b %d, %Y"),
+    " to ",
+    format(as.Date("2022-08-31"), "%b %d, %Y")
+  ))
+```
+
+<br>
+
+## About
+
+What's hot on #BeautyTok? The table lets you explore the most popular songs that users have featured in the cosmetics-related videos from Summer 2022. Each song conveys a different mood: from dreamy and whimsical to energetic. Each is a community-vetted earworm. Listen to the hits, discover trends and compare metrics in this interactive table.
+
+## Technology
+
+The table was built and styled in R with the packages [reactable](https://glin.github.io/reactable/) and [reactablefmtr](https://kcuilla.github.io/reactablefmtr/), [sparkline](https://github.com/htmlwidgets/sparkline) and custom JavaScript, HTML, CSS. It features a custom audio player, custom cell arrangements with album covers, and the use of spark lines. The icons are from [Font Awesome](https://fontawesome.com).
+
+## Data
+
+The dataset comprises 1,000 popular songs on TikTok and is formatted as an RDS file.
+
+The columns are:
+
+-   `music_id`: chr, unique ID of the song
+-   `song_title`: chr, name of the song
+-   `artist`: chr, name of the artist
+-   `play_url`: chr, url to the audio file hosted by TikTok
+-   `n_tiktoks`: int, number of times the song was used in TikToks
+-   `weekly_tiktoks`: list, contains a numeric vector for each row that has the number of uses by week from 2022-06-01 to 2022-08-31
+-   `weeks`: list, contains a yearweek vector (via [tsibble::yearweek()](https://tsibble.tidyverts.org/reference/year-week.html)) indicating the timing of the `weekly_tiktoks` column
+
+The dataset is an excerpt from a large database of TikTok videos, TikTok songs, and their relationships. The data was collected from TikTok by [Cosmention](https://cosmention.com), a social media monitoring tool specialized for the cosmetics industry. Only videos that were classified as cosmetics related are included. The classification was done via a [spaCy](https://spacy.io) model.
+
+## Authors
+
+Built by Paavo Huoviala, Swen Sieben and Paul Simmering at [Q Insight Agency](https://teamq.de/en).

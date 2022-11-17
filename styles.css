@@ -1,0 +1,42 @@
+a {
+  color: #fa446b;
+}
+
+h1 {
+  font-family: Montserrat, Arial, sans-serif;
+  font-size: 31px;
+  padding-bottom: 20px;
+  text-align: center;
+}
+
+.music-controls {
+  border: none;
+  border-radius: 5px;
+  background-color: white;
+  padding: 5px;
+}
+
+.music-controls:hover {
+  background: rgb(155,48,125);
+  background: linear-gradient(133deg, rgba(252,227,232,1) 0%, rgba(250,68,107,1) 69%);
+}
+
+/*Add font awesome icons as pseudo elements
+see https://fontawesome.com/v5/docs/web/advanced/css-pseudo-elements*/
+
+.music-controls::before {
+  display: inline-block;
+  font-style: normal;
+  font-variant: normal;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  margin-right: 5px;
+}
+
+.play-button::before {
+  font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f04b";
+}
+
+.pause-button::before {
+  font-family: "Font Awesome 5 Free"; font-weight: 900; content: "\f28b";
+}
