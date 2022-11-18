@@ -8,6 +8,8 @@ execute:
 editor: visual
 editor_options: 
   chunk_output_type: console
+output-file: index.html
+self-contained: true
 ---
 
 ```{r setup}
