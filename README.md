@@ -1,7 +1,10 @@
 # table-contest-2022
 
-This repository is a contribution to the [Posit Table Contest 2022](https://www.rstudio.com/blog/rstudio-table-contest-2022/).
-We provide a single table submission in the category interactive-HTML.
+This repository is a contribution to the [Posit Table Contest 2022](https://www.rstudio.com/blog/rstudio-table-contest-2022/). We provide a single table submission in the category interactive-HTML. Visit our GitHub Pages page to explore the [rendered version](https://qagentur.github.io/table-contest-2022/).
+
+Static preview:
+
+![](images/preview/preview.jpeg)
 
 ## About
 
