@@ -18,9 +18,9 @@ share:
   twitter: true
   facebook: true
   reddit: true
-  stumble: true
-  tumblr: true
-  linkedin: true
+  stumble: false
+  tumblr: false
+  linkedin: false
   email: true
 ---
 
@@ -214,4 +214,4 @@ Built by Paavo Huoviala, Swen Sieben and Paul Simmering at [Q Insight Agency](ht
 
 ## Spread the word
 
-Share this page by clicking on one of your favorite social media buttons below.
+Share this page by clicking on one of the buttons below.
