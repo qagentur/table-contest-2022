@@ -10,6 +10,18 @@ editor_options:
   chunk_output_type: console
 output-file: index.html
 self-contained: true
+filters:
+  - social-share
+share:
+  permalink: "https://qagentur.github.io/table-contest-2022/"
+  description: "What's hot on #BeautyTok? This table lets you explore the most popular songs that users have featured in the cosmetics-related videos from Summer 2022."
+  twitter: true
+  facebook: true
+  reddit: true
+  stumble: true
+  tumblr: true
+  linkedin: true
+  email: true
 ---
 
 ```{r setup}
@@ -199,3 +211,7 @@ The dataset is an excerpt from a large database of TikTok videos, TikTok songs, 
 ## Authors
 
 Built by Paavo Huoviala, Swen Sieben and Paul Simmering at [Q Insight Agency](https://teamq.de/en).
+
+## Spread the word
+
+Share this page by clicking on one of your favorite social media buttons below.
