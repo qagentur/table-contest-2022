@@ -55,6 +55,10 @@ songs <- songs_import %>%
   select(music_id, artist, song_title, play_url, n_tiktoks, weekly_tiktoks) %>% 
   mutate(
     image_path = c(image_files[1:20], rep(image_files[21], n() - 20)),
+    alt_text = c(
+      paste("Album art for", song_title, "by", artist)[1:20],
+      rep("Default album art showing a music note", n() - 20)
+    ),
     song_link = paste0(
       "https://www.tiktok.com/music/",
       str_replace_all(str_to_lower(artist), " ", "-"),
@@ -74,6 +78,8 @@ songs <- songs_import %>%
       ">",
       "<img src=\"",
       image_path,
+      "\" alt=\"",
+      alt_text,
       "\" style=\"height: auto; width: auto; max-width: 100px; max-height: 100px; \"></img></a>",
       "</div>",
       "<div style=\"margin-left: 10px; display: inline-block; line-break: auto; width: 190px\"><b>",
